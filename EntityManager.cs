@@ -7,27 +7,23 @@ namespace NeonShooter;
 
 static class EntityManager
 {
+    public static int Count { get { return _entities.Count; } }
+
     private static List<Entity> _entities = new List<Entity>();
     private static List<Enemy> _enemies = new List<Enemy>();
     private static List<Bullet> _bullets = new List<Bullet>();
-
-    static bool isUpdating;
-    static List<Entity> addedEntities = new List<Entity>();
-
-    public static int Count
-    { 
-        get { return _entities.Count; } 
-    }
+    private static List<Entity> _addedEntities = new List<Entity>();
+    private static bool _isUpdating;
 
     public static void Add(Entity entity)
     {
-        if (!isUpdating) 
+        if (!_isUpdating) 
         {
             AddEntity(entity);
         }
         else
         {
-            addedEntities.Add(entity);  
+            _addedEntities.Add(entity);  
         }
     }
 
@@ -47,7 +43,7 @@ static class EntityManager
 
     public static void Update()
     {
-        isUpdating = true;
+        _isUpdating = true;
 
         HandleCollisions();
 
@@ -56,14 +52,14 @@ static class EntityManager
             entity.Update();
         }
 
-        isUpdating = false;
+        _isUpdating = false;
 
-        foreach (var entity in addedEntities)
+        foreach (var entity in _addedEntities)
         {
-            _entities.Add(entity);
+            AddEntity(entity);
         }
 
-        addedEntities.Clear();
+        _addedEntities.Clear();
 
         // remove any expired entities. 
         _entities = _entities.Where(x => !x.IsExpired).ToList();
@@ -77,12 +73,6 @@ static class EntityManager
         {
             entity.Draw(spriteBatch);
         }
-    }
-
-    private static bool IsColliding(Entity a, Entity b)
-    {
-        float radius = a.Radius + b.Radius;
-        return !a.IsExpired && !b.IsExpired && Vector2.DistanceSquared(a.Position, b.Position) < radius * radius;
     }
 
     private static void HandleCollisions()
@@ -120,5 +110,11 @@ static class EntityManager
                 break;
             }
         }
+    }
+
+    private static bool IsColliding(Entity a, Entity b)
+    {
+        float radius = a.Radius + b.Radius;
+        return !a.IsExpired && !b.IsExpired && Vector2.DistanceSquared(a.Position, b.Position) < radius * radius;
     }
 }

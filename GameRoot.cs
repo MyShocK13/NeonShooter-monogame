@@ -39,6 +39,7 @@ public class GameRoot : Game
 
     protected override void Update(GameTime gameTime)
     {
+        GameTime = gameTime;
         Input.Update();
 
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -62,6 +63,7 @@ public class GameRoot : Game
 
         // Draw user interface
         _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+
         _spriteBatch.DrawString(Art.Font, "Lives: " + PlayerStatus.Lives, new Vector2(5), Color.White);
         DrawRightAlignedString("Score: " + PlayerStatus.Score, 5);
         DrawRightAlignedString("Multiplier: " + PlayerStatus.Multiplier, 35);

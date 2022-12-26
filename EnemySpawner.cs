@@ -33,13 +33,12 @@ static class EnemySpawner
     private static Vector2 GetSpawnPosition()
     {
         Vector2 pos;
-
         do
         {
             pos = new Vector2(_rand.Next((int)GameRoot.ScreenSize.X), _rand.Next((int)GameRoot.ScreenSize.Y));
         }
         while (Vector2.DistanceSquared(pos, PlayerShip.Instance.Position) < 250 * 250);
-        
+
         return pos;
     }
 

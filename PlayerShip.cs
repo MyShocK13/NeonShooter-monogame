@@ -39,7 +39,14 @@ class PlayerShip : Entity
     {
         if (IsDead)
         {
-            _framesUntilRespawn--;
+            if (--_framesUntilRespawn == 0)
+            {
+                if (PlayerStatus.Lives == 0)
+                {
+                    PlayerStatus.Reset();
+                    Position = GameRoot.ScreenSize / 2;
+                }
+            }
             return;
         }
 
@@ -85,6 +92,7 @@ class PlayerShip : Entity
 
     public void Kill()
     {
-        _framesUntilRespawn = 60;
+        PlayerStatus.RemoveLife();
+        _framesUntilRespawn = PlayerStatus.IsGameOver ? 300 : 120;
     }
 }

@@ -20,6 +20,24 @@ class Enemy : Entity
         Position = position;
         Radius = image.Width / 2f;
         color = Color.Transparent;
+        PointValue = 1;
+    }
+
+    public static Enemy CreateSeeker(Vector2 position)
+    {
+        var enemy = new Enemy(Art.Seeker, position);
+        enemy.AddBehaviour(enemy.FollowPlayer());
+        enemy.PointValue = 2;
+
+        return enemy;
+    }
+
+    public static Enemy CreateWanderer(Vector2 position)
+    {
+        var enemy = new Enemy(Art.Wanderer, position);
+        enemy.AddBehaviour(enemy.MoveRandomly());
+
+        return enemy;
     }
 
     public override void Update()
@@ -43,6 +61,8 @@ class Enemy : Entity
     public void WasShot()
     {
         IsExpired = true;
+        Sound.Explosion.Play(0.5f, Rand.NextFloat(-0.2f, 0.2f), 0);
+
         PlayerStatus.AddPoints(PointValue);
         PlayerStatus.IncreaseMultiplier();
     }
@@ -51,22 +71,6 @@ class Enemy : Entity
     {
         var d = Position - other.Position;
         Velocity += 10 * d / (d.LengthSquared() + 1);
-    }
-
-    public static Enemy CreateSeeker(Vector2 position)
-    {
-        var enemy = new Enemy(Art.Seeker, position);
-        enemy.AddBehaviour(enemy.FollowPlayer());
-
-        return enemy;
-    }
-
-    public static Enemy CreateWanderer(Vector2 position)
-    {
-        var enemy = new Enemy(Art.Wanderer, position);
-        enemy.AddBehaviour(enemy.MoveRandomly());
-
-        return enemy;
     }
 
     private void AddBehaviour(IEnumerable<int> behaviour)
