@@ -18,7 +18,7 @@ public class GameRoot : Game
         Instance = this;
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
-        IsMouseVisible = true;
+        IsMouseVisible = false;
     }
 
     protected override void Initialize()
@@ -55,6 +55,9 @@ public class GameRoot : Game
 
         _spriteBatch.Begin(SpriteSortMode.Texture, BlendState.Additive);
         EntityManager.Draw(_spriteBatch);
+
+        // draw the custom mouse cursor 
+        _spriteBatch.Draw(Art.Pointer, Input.MousePosition, Color.White);
         _spriteBatch.End();
     }
 }
