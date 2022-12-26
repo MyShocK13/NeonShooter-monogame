@@ -116,6 +116,7 @@ static class EntityManager
             {
                 PlayerShip.Instance.Kill();
                 _enemies.ForEach(x => x.WasShot());
+                EnemySpawner.Reset();
                 break;
             }
         }

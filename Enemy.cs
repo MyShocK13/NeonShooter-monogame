@@ -9,6 +9,7 @@ class Enemy : Entity
 {
     public static Random Rand = new Random();
     public bool IsActive { get { return _timeUntilStart <= 0; } }
+    public int PointValue { get; private set; }
 
     private int _timeUntilStart = 60;
     private List<IEnumerator<int>> _behaviours = new List<IEnumerator<int>>();
@@ -42,6 +43,8 @@ class Enemy : Entity
     public void WasShot()
     {
         IsExpired = true;
+        PlayerStatus.AddPoints(PointValue);
+        PlayerStatus.IncreaseMultiplier();
     }
 
     public void HandleCollision(Enemy other)
