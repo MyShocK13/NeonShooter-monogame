@@ -1,4 +1,6 @@
-﻿namespace NeonShooter;
+﻿using Microsoft.Xna.Framework;
+
+namespace NeonShooter;
 
 class PlayerShip : Entity
 {
@@ -25,6 +27,14 @@ class PlayerShip : Entity
 
     public override void Update()
     {
-        // ship logic goes here 
+        const float speed = 8;
+        Velocity = speed * Input.GetMovementDirection();
+        Position += Velocity;
+        Position = Vector2.Clamp(Position, Size / 2, GameRoot.ScreenSize - Size / 2);
+
+        if (Velocity.LengthSquared() > 0)
+        {
+            Orientation = Velocity.ToAngle();
+        }
     }
 }
