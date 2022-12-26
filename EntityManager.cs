@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,21 +7,23 @@ namespace NeonShooter;
 
 static class EntityManager
 {
-    static List<Entity> entities = new List<Entity>();
+    private static List<Entity> _entities = new List<Entity>();
+    private static List<Enemy> _enemies = new List<Enemy>();
+    private static List<Bullet> _bullets = new List<Bullet>();
 
     static bool isUpdating;
     static List<Entity> addedEntities = new List<Entity>();
 
     public static int Count
     { 
-        get { return entities.Count; } 
+        get { return _entities.Count; } 
     }
 
     public static void Add(Entity entity)
     {
         if (!isUpdating) 
         {
-            entities.Add(entity);
+            AddEntity(entity);
         }
         else
         {
@@ -28,11 +31,25 @@ static class EntityManager
         }
     }
 
+    private static void AddEntity(Entity entity)
+    {
+        _entities.Add(entity);
+
+        if (entity is Bullet)
+        {
+            _bullets.Add(entity as Bullet);
+        }
+        else if (entity is Enemy)
+        {
+            _enemies.Add(entity as Enemy);
+        }
+    }
+
     public static void Update()
     {
         isUpdating = true;
 
-        foreach (var entity in entities) 
+        foreach (var entity in _entities) 
         { 
             entity.Update();
         }
@@ -41,20 +58,28 @@ static class EntityManager
 
         foreach (var entity in addedEntities)
         {
-            entities.Add(entity);
+            _entities.Add(entity);
         }
 
         addedEntities.Clear();
 
         // remove any expired entities. 
-        entities = entities.Where(x => !x.IsExpired).ToList();
+        _entities = _entities.Where(x => !x.IsExpired).ToList();
+        _bullets = _bullets.Where(x => !x.IsExpired).ToList();
+        _enemies = _enemies.Where(x => !x.IsExpired).ToList();
     }
 
     public static void Draw(SpriteBatch spriteBatch)
     {
-        foreach (var entity in entities)
+        foreach (var entity in _entities)
         {
             entity.Draw(spriteBatch);
         }
+    }
+
+    private static bool IsColliding(Entity a, Entity b)
+    {
+        float radius = a.Radius + b.Radius;
+        return !a.IsExpired && !b.IsExpired && Vector2.DistanceSquared(a.Position, b.Position) < radius * radius;
     }
 }
