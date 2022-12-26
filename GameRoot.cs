@@ -45,6 +45,7 @@ public class GameRoot : Game
         base.Update(gameTime);
 
         EntityManager.Update();
+        EnemySpawner.Update();
     }
 
     protected override void Draw(GameTime gameTime)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace NeonShooter;
@@ -19,10 +20,13 @@ class PlayerShip : Entity
         }
     }
 
+    public bool IsDead { get { return _framesUntilRespawn > 0; } }
+
     private const float Speed = 8;
     private const int CooldownFrames = 6;
     private int _cooldownRemaining = 0;
     private static Random _rand = new Random();
+    private int _framesUntilRespawn = 0;
 
     private PlayerShip()
     {
@@ -33,7 +37,12 @@ class PlayerShip : Entity
 
     public override void Update()
     {
-        
+        if (IsDead)
+        {
+            _framesUntilRespawn--;
+            return;
+        }
+
         Velocity = Speed * Input.GetMovementDirection();
         Position += Velocity;
         Position = Vector2.Clamp(Position, Size / 2, GameRoot.ScreenSize - Size / 2);
@@ -64,5 +73,18 @@ class PlayerShip : Entity
         {
             _cooldownRemaining--;
         }
+    }
+
+    public override void Draw(SpriteBatch spriteBatch)
+    {
+        if (!IsDead)
+        {
+            base.Draw(spriteBatch);
+        }
+    }
+
+    public void Kill()
+    {
+        _framesUntilRespawn = 60;
     }
 }

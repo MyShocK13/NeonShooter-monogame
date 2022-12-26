@@ -49,6 +49,8 @@ static class EntityManager
     {
         isUpdating = true;
 
+        HandleCollisions();
+
         foreach (var entity in _entities) 
         { 
             entity.Update();
@@ -81,5 +83,41 @@ static class EntityManager
     {
         float radius = a.Radius + b.Radius;
         return !a.IsExpired && !b.IsExpired && Vector2.DistanceSquared(a.Position, b.Position) < radius * radius;
+    }
+
+    private static void HandleCollisions()
+    {
+        // handle collisions between enemies 
+        for (int i = 0; i < _enemies.Count; i++)
+            for (int j = i + 1; j < _enemies.Count; j++)
+            {
+                if (IsColliding(_enemies[i], _enemies[j]))
+                {
+                    _enemies[i].HandleCollision(_enemies[j]);
+                    _enemies[j].HandleCollision(_enemies[i]);
+                }
+            }
+
+        // handle collisions between bullets and enemies 
+        for (int i = 0; i < _enemies.Count; i++)
+            for (int j = 0; j < _bullets.Count; j++)
+            {
+                if (IsColliding(_enemies[i], _bullets[j]))
+                {
+                    _enemies[i].WasShot();
+                    _bullets[j].IsExpired = true;
+                }
+            }
+
+        // handle collisions between the player and enemies 
+        for (int i = 0; i < _enemies.Count; i++)
+        {
+            if (_enemies[i].IsActive && IsColliding(PlayerShip.Instance, _enemies[i]))
+            {
+                PlayerShip.Instance.Kill();
+                _enemies.ForEach(x => x.WasShot());
+                break;
+            }
+        }
     }
 }
